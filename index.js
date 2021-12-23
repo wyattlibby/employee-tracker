@@ -1,24 +1,36 @@
-const inquirer = require ("inquirer");
-const mysql = require ("mysql2");
-require ("console.table");
-const connection = require ("./config/connection");
+const inquirer = require("inquirer");
+const mysql = require("mysql2");
+require("console.table");
+const db = require("./config/connection");
 
-console.log ("welcome to employee tracker");
-mainMenu ();
 
-async function mainMenu (){
-    const {action}= await inquirer.prompt({
-        message: "what would you like to do",
-        name: "action",
-        type: "list",
-        choices: ["exit"]
-    });
-    switch(action){
-        case "exit": return finish();
-    }
+
+async function mainMenu(){
+  const response = await inquirer.prompt({
+      message:"choose an action", 
+      name: "action",
+      type: "list",
+      choices: ["add manager", "add engineer", "add intern", "finish"]
+  });
+
+  switch(response.action){
+      case "add manager": return addManager();
+      case "add engineer": return addEngineer();
+      case "add intern": return addIntern();
+      case "finish": return finish();
+  }
 }
 
-function finish(){
-    console.log("thank you for using employee tracker");
-    process.exit();
+async function viewDepartments() {
+  const rows = await db.query("select * from department");
+  console.table(rows);
+  mainMenu();
 }
+
+function finish() {
+  console.log("thank you for using employee tracker");
+  process.exit();
+}
+
+console.log("welcome to employee tracker");
+mainMenu();
